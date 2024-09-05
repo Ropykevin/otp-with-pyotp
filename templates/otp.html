@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}OTP{% endblock %}
+{% block content %}
+
+<p class="page-title">Verify OTP</p>
+<form action="/otpverification" method="post">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.otp.label }}<br>
+        {{ form.otp(class="form-control") }}<br>
+        {% for error in form.otp.errors %}
+        <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+
+    <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+
+
+
+{% endblock %}

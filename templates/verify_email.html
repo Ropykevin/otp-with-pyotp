@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Reset{% endblock %}
+{% block content %}
+<h2>Verify Your Email</h2>
+{% if get_flashed_messages(with_categories=true) %}
+{% for category, message in get_flashed_messages(with_categories=true) %}
+<div class="flash-message {{ category }}">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<!-- Countdown Timer Display -->
+<div id="countdown" class="countdown"></div>
+
+<div id="otp-section">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.otp.label }}<br>
+            {{ form.otp() }}<br>
+            {% for error in form.otp.errors %}
+            <span>{{ error }}</span><br>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <button type="submit">Verify OTP</button>
+        </div>
+    </form>
+</div>
+
+<div id="resend-section" >
+    <form method="POST" action="/resend_otp">
+        <div class="form-group">
+            <button type="submit">Resend OTP</button>
+        </div>
+    </form>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the expiry time from the HTML attribute
+        const expiryTime = "{{ otp_expiry_time }}";
+        if (expiryTime) {
+            const countdownElement = document.getElementById('countdown');
+            const otpSection = document.getElementById('otp-section');
+            const resendSection = document.getElementById('resend-section');
+            const endTime = new Date(expiryTime).getTime();
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    countdownElement.innerHTML = "OTP expired";
+                    otpSection.style.display = 'none';
+                    resendSection.style.display = 'block';
+                    clearInterval(interval);
+                } else {
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    countdownElement.innerHTML = `${minutes}m ${seconds}s`;
+                }
+            }
+
+            updateCountdown(); 
+            const interval = setInterval(updateCountdown, 1000);
+        }
+    });
+</script>
+
+
+{% endblock %}
